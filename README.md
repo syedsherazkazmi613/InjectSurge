@@ -1,127 +1,29 @@
-InjectSurge
-SQL + NoSQL Injection Surface Scanner for authorized penetration testing.
-�
-�
-�
-Load image
-Load image
-Load image
-What It Does
+# InjectSurge
+
+> SQL + NoSQL Injection Surface Scanner for authorized penetration testing.
+
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Version](https://img.shields.io/badge/version-2.0-orange)
+
+---
+
+## What It Does
+
 InjectSurge crawls HTML forms on a target page, fingerprints the backend database from response headers and error strings, then fires targeted injection payloads — both SQL and NoSQL — and evaluates each response for real signs of vulnerability: status code changes, response length shifts, time delays, and new session cookies.
+
 Built for professional VAPT engagements where you need accurate, explainable findings you can put directly in a report.
-Features
-Auto DB fingerprinting — detects MySQL, MSSQL, Oracle, PostgreSQL, SQLite, MongoDB, CouchDB from response headers and error strings
-Auto body-mode detection — probes whether the target expects application/json or application/x-www-form-urlencoded, tries both if ambiguous
-Real NoSQL operator payloads — sends {"$ne": "x"} as actual nested JSON objects, not stringified form values (the common mistake that makes most scanners miss NoSQL injection entirely)
-Combined-field testing — applies the same operator to all fields simultaneously, catching auth bypasses that only trigger when every field carries the payload (e.g. {username: {$ne: null}, password: {$ne: null}})
-Multi-signal detection — status code changes, response length delta, new cookies, time delays, DB error strings
-Polite delay between requests, configurable
-SSL verification toggle, custom cookies and headers support
-Supported Databases
-Database
-Error-based
-Time-based
-Auth bypass
-NoSQL operators
-MySQL
-✅
-✅
-✅
-—
-MSSQL
-✅
-✅
-✅
-—
-Oracle
-✅
-—
-✅
-—
-PostgreSQL
-✅
-✅
-✅
-—
-SQLite
-✅
-—
-✅
-—
-MongoDB
-✅
-—
-✅
-✅
-CouchDB
-—
-—
-✅
-✅
-Installation
-Bash
-requirements.txt
-Code
-Usage
-Basic scan:
-Bash
-With authentication cookies:
-Bash
-Force JSON mode (for REST/API endpoints):
-Bash
-Force form mode:
-Bash
-With custom headers and slower delay:
-Bash
-Skip SSL verification (self-signed certs):
-Bash
-CLI Reference
-Flag
-Default
-Description
-url
-required
-Target URL pointing to the page containing the form
---mode
-auto
-Body encoding: auto, json, or form
---cookies
-—
-Cookie string: "name=val; name2=val2"
---headers
-—
-Extra headers as JSON string
---delay
-0.3
-Seconds between requests
---timeout
-10
-Request timeout in seconds
---no-verify
-off
-Disable SSL certificate verification
-Output Guide
-Code
-Confirmed finding example:
-Code
-How Detection Works
-InjectSurge uses five independent signals, checked in order:
-Time delay — response takes ≥2.5s on a time-based payload (SLEEP, WAITFOR)
-DB error strings — known error substrings from MySQL, MSSQL, Oracle, PostgreSQL, SQLite, MongoDB in the response body
-Status code change — baseline was 4xx, payload response is 2xx (auth bypass pattern)
-New session cookie — Set-Cookie header appears where baseline had none
-Response length increase — body grew >300 chars and >15% vs baseline
-File Structure
-Code
-Important: Legal & Ethical Use
-InjectSurge is for authorized security testing only.
-Only run this tool against systems you own, or systems where you have explicit written authorization from the owner (signed VAPT agreement, bug bounty scope, or equivalent). Unauthorized use is illegal in most jurisdictions — in Pakistan specifically, it falls under PECA 2016 Section 3 and Section 4.
-The tool prints an authorization reminder on every run. That reminder is there for a reason.
-Author
-Sheraz — Codethus | CEH | ISO/IEC 27001
-Lahore-based cybersecurity agency specializing in VAPT, red team exercises, and SOC/SIEM services.
-License
-MIT — free to use, modify, and distribute. Attribution appreciated.- **Polite delay** between requests, configurable
+
+---
+
+## Features
+
+- **Auto DB fingerprinting** — detects MySQL, MSSQL, Oracle, PostgreSQL, SQLite, MongoDB, CouchDB from response headers and error strings
+- **Auto body-mode detection** — probes whether the target expects `application/json` or `application/x-www-form-urlencoded`, tries both if ambiguous
+- **Real NoSQL operator payloads** — sends `{"$ne": "x"}` as actual nested JSON objects, not stringified form values (the common mistake that makes most scanners miss NoSQL injection entirely)
+- **Combined-field testing** — applies the same operator to all fields simultaneously, catching auth bypasses that only trigger when every field carries the payload (e.g. `{username: {$ne: null}, password: {$ne: null}}`)
+- **Multi-signal detection** — status code changes, response length delta, new cookies, time delays, DB error strings
+- **Polite delay** between requests, configurable
 - **SSL verification toggle**, custom cookies and headers support
 
 ---
@@ -143,7 +45,7 @@ MIT — free to use, modify, and distribute. Attribution appreciated.- **Polite 
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/InjectSurge.git
+git clone https://github.com/sherazkazmi613/InjectSurge.git
 cd InjectSurge
 pip install -r requirements.txt
 ```
@@ -154,14 +56,6 @@ requests
 beautifulsoup4
 colorama
 ```
-
-For Groq LLM integration (optional):
-```bash
-pip install requests  # already included — no extra SDK needed
-export GROQ_API_KEY=your_key_here
-```
-
-Get a free Groq API key at [console.groq.com](https://console.groq.com).
 
 ---
 
@@ -202,13 +96,6 @@ python3 inject_scanner.py https://target.com/login \
 python3 inject_scanner.py https://target.com/login --no-verify
 ```
 
-**With Groq LLM analysis:**
-```bash
-export GROQ_API_KEY=gsk_...
-python3 inject_scanner.py https://target.com/login
-```
-If `GROQ_API_KEY` is set and `groq_client.py` is present, Groq analysis runs automatically. If the key is missing or the API is unreachable, the scanner falls back to its built-in heuristics silently.
-
 ---
 
 ## CLI Reference
@@ -247,27 +134,13 @@ If `GROQ_API_KEY` is set and `groq_client.py` is present, Groq analysis runs aut
 
 ## How Detection Works
 
-InjectSurge uses four independent signals, checked in order:
+InjectSurge uses five independent signals, checked in order:
 
 1. **Time delay** — response takes ≥2.5s on a time-based payload (SLEEP, WAITFOR)
 2. **DB error strings** — known error substrings from MySQL, MSSQL, Oracle, PostgreSQL, SQLite, MongoDB in the response body
 3. **Status code change** — baseline was 4xx, payload response is 2xx (auth bypass pattern)
 4. **New session cookie** — `Set-Cookie` header appears where baseline had none
 5. **Response length increase** — body grew >300 chars and >15% vs baseline
-
-If Groq is configured, each response is also sent to the LLM for semantic judgment independently of the above signals.
-
----
-
-## Groq LLM Integration
-
-When `GROQ_API_KEY` is set, two things happen:
-
-**Per-response judgment** — after each payload fires, InjectSurge sends the baseline body snippet and payload response body snippet to `llama-3.1-8b-instant` with a structured prompt asking it to judge whether the response semantically indicates a real injection success. Returns `{"vulnerable": bool, "confidence": "high|medium|low", "reason": "..."}`.
-
-**Executive summary** — at the end of the scan, confirmed findings are sent to the model and it writes a short plain-language paragraph suitable for the executive summary section of a pentest report.
-
-This is especially useful when the target returns `200` for everything (common in legacy ASP/PHP apps) and status-code heuristics alone can't distinguish a bypassed login from a failed one — the LLM reads the actual content.
 
 ---
 
@@ -276,7 +149,6 @@ This is especially useful when the target returns `200` for everything (common i
 ```
 InjectSurge/
 ├── inject_scanner.py     # main scanner
-├── groq_client.py        # Groq API wrapper (optional)
 ├── requirements.txt
 └── README.md
 ```
